@@ -1,6 +1,6 @@
 ---
 title: "Activity 11 - Simulation"
-author: "Name"
+author: "Moeen Farasat"
 output: github_document
 ---
 
@@ -25,7 +25,13 @@ One way to make sure that you get similar results each time is to always run all
 
 For this activity, you will need the `{tidyverse}`.
 
-**delete this line and load `{tidyverse}`**
+
+```{r loading_packages, message=FALSE}
+
+library(tidyverse)
+
+```
+
 
 
 ## Exploration
@@ -59,13 +65,48 @@ ggplot(norm_samp_1000, aes(x = values)) +
 
 Using `norm_samp_1000`, obtain the mean and standard deviation of this sample?
 
+```{r}
+norm_samp_1000 %>%
+  summarize(mean = mean(values), sd = sd(values))
+
+```
+
+**Mean is a little bigger then the average mean specified above and sd is a little lower then what is defined above**
 
 
 Now, create a new simulation.
 In this you will obtain a sample of size 30 from from a Normally distributed variable with a mean 50 and standard deviation 10, and find the mean and standard deviation.
 How do the mean and standard deviation compare to your answers above?
 
+```{r norm-samp - 30}
+norm_samp_30 <- tibble(
+  values = rnorm(n = 30, mean = 50, sd = 10)
+)
 
+ggplot(norm_samp_30, aes(x = values)) + 
+  geom_histogram(aes(y = ..count.. / sum(..count..)),       # plot proportion instead of count
+                 fill = "white",
+                 color = "black",
+                 binwidth = 3) +                            # specify how big bins should be
+  stat_function(fun = function(x)                           # some rescaling "magic" to get correct densities
+                      dnorm(x, mean = 50, sd = 10) * 3,     # see: https://stackoverflow.com/a/36344354
+                color = "#0065a4",                          # laker-blue is #0065a4
+                size = 2,                                   # make line a little thicker
+                alpha = 0.4) +                                
+  geom_vline(xintercept = mean(norm_samp_1000$values),      # plot vline at mean of sample
+             color = "#a43f00",                             # pick a color to contrast blue
+             size = 2) +
+  theme_minimal() +                                         # get ride of chart junk
+  labs(y = "proportion")                                    # rename y axis
+
+```
+
+
+```{r}
+norm_samp_30 %>%
+  summarize(mean = mean(values), sd = sd(values))
+
+```
 
 ### Non-normally distributed population
 
@@ -73,7 +114,33 @@ Using a similar process, obtain Exponentially distributed variable (`?rexp`) wit
 Obtain a sample of 1,000 observations and a sample of 30 observations.
 Then, calculate the mean and standard deviation of each sample and discuss how the values are similar and how they differ.
 
+```{r}
+exp_1000 <- rexp(1000, 0.02)
+##exp_1000
 
+matrixdata =  matrix(exp_1000, nrow = 1000, ncol = 4)
+dim(matrixdata)
+str(matrixdata)
+means.exp = apply(matrixdata, 1, mean)
+mean(means.exp)
+sd(means.exp)
+var(means.exp)
+hist(means.exp)
+```
+```{r}
+exp_30 <- rexp(30, 0.02)
+#exp_30
+
+matrixdata =  matrix(exp_30, nrow = 1000, ncol = 4)
+exp_30
+dim(matrixdata)
+str(matrixdata)
+means.exp = apply(matrixdata, 1, mean)
+mean(means.exp)
+sd(means.exp)
+var(means.exp)
+hist(means.exp)
+```
 
 
 ![](README-img/noun_pause.png) **Planned Pause Point**: If you have any questions, contact your instructor. Otherwise feel free to continue on.
